@@ -1,2 +1,1 @@
-Das ist eine Probe
-WebStackPage
+Das ist eine Probe 'WebStackPage'
