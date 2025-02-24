@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>纸牌游戏</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #2e7d32;
+        }
+        #board {
+            display: flex;
+            flex-wrap: wrap;
+            width: 800px;
+        }
+        .card {
+            width: 100px;
+            height: 150px;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            border-radius: 8px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            background: #444;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <script>
+        const board = document.getElementById("board");
+        const suits = ['♠', '♥', '♣', '♦'];
+        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+        let deck = [];
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function renderBoard() {
+            board.innerHTML = "";
+            deck.forEach(card => {
+                const cardElement = document.createElement("div");
+                cardElement.className = "card hidden";
+                cardElement.dataset.suit = card.suit;
+                cardElement.dataset.value = card.value;
+                cardElement.addEventListener("click", () => revealCard(cardElement));
+                board.appendChild(cardElement);
+            });
+        }
+
+        function revealCard(cardElement) {
+            if (cardElement.classList.contains("hidden")) {
+                cardElement.classList.remove("hidden");
+                cardElement.textContent = `${cardElement.dataset.value}${cardElement.dataset.suit}`;
+            }
+        }
+
+        function startGame() {
+            createDeck();
+            shuffleDeck();
+            renderBoard();
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
