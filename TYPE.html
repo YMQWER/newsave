@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网页跳转</title>
+    <script>
+        // 跳转函数
+        function redirect() {
+            // 设置跳转的URL
+            const targetUrl = "https://us.kg";
+            
+            // 延迟3秒后跳转
+            setTimeout(function() {
+                window.location.href = targetUrl;
+            }, 3000);
+        }
+
+        // 页面加载完成后执行跳转
+        window.onload = redirect;
+    </script>
+</head>
+<body>
+    <h1>页面即将跳转...</h1>
+    <p>请稍候，3秒后将跳转到目标页面。</p>
+</body>
+</html>
