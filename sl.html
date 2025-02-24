@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>扫雷游戏</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #ddd;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(10, 40px);
+            grid-template-rows: repeat(10, 40px);
+            gap: 2px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #bbb;
+            border: 1px solid #999;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .cell.open {
+            background: #eee;
+        }
+        .cell.bomb {
+            background: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <script>
+        const board = document.getElementById("board");
+        const rows = 10;
+        const cols = 10;
+        const bombsCount = 15;
+
+        let cells = [];
+
+        function init() {
+            cells = Array(rows).fill().map(() => Array(cols).fill({ mine: false, revealed: false, count: 0 }));
+
+            placeBombs();
+            calculateCounts();
+            renderBoard();
+        }
+
+        function placeBombs() {
+            let placed = 0;
+            while (placed < bombsCount) {
+                const x = Math.floor(Math.random() * rows);
+                const y = Math.floor(Math.random() * cols);
+                if (!cells[x][y].mine) {
+                    cells[x][y].mine = true;
+                    placed++;
+                }
+            }
+        }
+
+        function calculateCounts() {
+            for (let x = 0; x < rows; x++) {
+                for (let y = 0; y < cols; y++) {
+                    if (cells[x][y].mine) continue;
+                    let count = 0;
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            const nx = x + dx;
+                            const ny = y + dy;
+                            if (nx >= 0 && ny >= 0 && nx < rows && ny < cols && cells[nx][ny].mine) {
+                                count++;
+                            }
+                        }
+                    }
+                    cells[x][y].count = count;
+                }
+            }
+        }
+
+        function renderBoard() {
+            board.innerHTML = "";
+            for (let x = 0; x < rows; x++) {
+                for (let y = 0; y < cols; y++) {
+                    const cell = document.createElement("div");
+                    cell.className = "cell";
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.addEventListener("click", handleClick);
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function handleClick(event) {
+            const x = parseInt(event.target.dataset.x);
+            const y = parseInt(event.target.dataset.y);
+
+            if (cells[x][y].mine) {
+                revealAllBombs();
+                alert("游戏结束！");
+                return;
+            }
+
+            revealCell(x, y);
+        }
+
+        function revealCell(x, y) {
+            if (x < 0 || y < 0 || x >= rows || y >= cols || cells[x][y].revealed) return;
+
+            const cell = board.children[x * cols + y];
+            cell.classList.add("open");
+            cells[x][y].revealed = true;
+
+            if (cells[x][y].count > 0) {
+                cell.textContent = cells[x][y].count;
+            } else {
+                for (let dx = -1; dx <= 1; dx++) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                        revealCell(x + dx, y + dy);
+                    }
+                }
+            }
+        }
+
+        function revealAllBombs() {
+            for (let x = 0; x < rows; x++) {
+                for (let y = 0; y < cols; y++) {
+                    if (cells[x][y].mine) {
+                        const cell = board.children[x * cols + y];
+                        cell.classList.add("bomb");
+                    }
+                }
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
